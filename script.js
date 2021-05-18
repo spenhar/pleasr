@@ -55,7 +55,7 @@ const scene = new THREE.Scene();
 let planeGeometry = new THREE.BoxGeometry(cameraRadius * 10, cameraRadius * 10, 0);
 
 let planeMaterial = new THREE.MeshPhongMaterial({
-
+  color: 0x000000
 });
 let plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.position.set(0, 0, -12);
@@ -118,7 +118,7 @@ for (let i=0; i < itemCount; i++) {
   const item = new THREE.Mesh(geometry, material);
   item.position.x = (Math.random() - 0.5) * 0.2;
   item.position.y = (Math.random() - 0.5) * 0.2;
-  item.position.z = -2;
+  item.position.z = -2 + Math.random() * 2;
   item.vz = Math.random() * 0.3 + 0.1;
   
   item.material.needsUpdate = true;
@@ -143,6 +143,8 @@ function updateField() {
     item.material.opacity = Math.min(1, item.material.opacity + 0.04);
     if (item.position.z > 30) {
       item.position.z = -3;
+      item.position.x = (Math.random() - 0.5) * 0.2;
+      item.position.y = (Math.random() - 0.5) * 0.2;
       item.material.opacity = 0;
     }
   }
