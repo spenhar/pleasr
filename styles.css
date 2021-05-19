@@ -32,10 +32,10 @@ footer {
 }
 
 .h4 {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 8px;
+  letter-spacing: 5px;
 
 }
 
@@ -146,9 +146,9 @@ video {
 }
 
 .modal-content {
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0,0,0,0.8);
   margin: 10% auto;
-  padding: 2rem;
+  padding: 1rem 2rem 1.5rem;
   border: 1px solid #888;
   border-radius: 3px;
   width: 80%;
