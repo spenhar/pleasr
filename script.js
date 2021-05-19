@@ -41,7 +41,6 @@ window.addEventListener('load', () => {
     initialized = true;
   }
 });
-
 /*
   Renderer
   */
@@ -55,6 +54,32 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setClearColor(0x000000, 0);
 app.appendChild(renderer.domElement);
 
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2( 1, 1 );
+const color = new THREE.Color();
+let intersections;
+let activeItem;
+
+document.addEventListener( 'mousemove', onMouseMove );
+document.addEventListener('click', handleClick);
+
+function handleClick() {
+  if (intersections[0]) {
+    activeItem = intersections[0].object;
+  } else {
+    activeItem = null;
+  }
+}
+
+function onMouseMove( event ) {
+
+  event.preventDefault();
+
+  mouse.x = ( event.clientX / width ) * 2 - 1;
+  mouse.y = - ( event.clientY / height ) * 2 + 1;
+
+}
+
 /*
   Camera
   */
@@ -67,7 +92,7 @@ let cameraStartPosition = {
 let cameraEndPosition = cameraStartPosition;
 let cameraFrame = 0;
 
-const camera = new THREE.PerspectiveCamera(15, aspect, .01, 4000 );
+const camera = new THREE.PerspectiveCamera(5, aspect, .01, 4000 );
 camera.position.set(cameraStartPosition.x, cameraStartPosition.y, cameraStartPosition.z);
 camera.zoom = 1.5;
 camera.updateProjectionMatrix();
@@ -160,6 +185,19 @@ const render = (now) => {
 
   if (!initialized) return;
   updateField()
+
+  raycaster.setFromCamera( mouse, camera );
+  intersections = raycaster.intersectObjects( itemGroup.children )
+
+  if ( intersections.length > 0 ) {
+    const intersection = intersections[0].object;
+    if (intersection !== activeItem) {
+      intersection.material.opacity = 0.8;
+      document.body.style.cursor = 'pointer';
+    }
+  } else {
+    document.body.style.cursor = 'auto';
+  }
   renderer.render(scene, camera);
 
   frame++;
@@ -168,21 +206,31 @@ const render = (now) => {
 function updateField() {
   for (let pIndex = 0; pIndex < itemGroup.children.length; pIndex++) {
     const item = itemGroup.children[pIndex];
-    item.position.z += item.vz;
-    item.material.opacity = Math.min(1, item.material.opacity + 0.04);
-    item.rotation.y += item.rvy;
-    item.rotation.x += item.rvx;
-    item.rotation.z += item.rvz;
-    if (item.position.z > 20) {
-      resetItemPosition(item);
+    if (item === activeItem) {
+      item.position.x += 0.2 * (0 - item.position.x);
+      item.position.y += 0.2 * (0 - item.position.y);
+      item.position.z += 0.2 * (9 - item.position.z);
+      item.material.opacity = 1;
+      item.rotation.x += 0.2 * (0 - item.rotation.x);
+      item.rotation.y += 0.2 * (0 - item.rotation.y);
+      item.rotation.z += 0.2 * (0 - item.rotation.z);
+    } else {
+      item.position.z += item.vz;
+      item.material.opacity = Math.min(1, item.material.opacity + 0.04);
+      item.rotation.y += item.rvy;
+      item.rotation.x += item.rvx;
+      item.rotation.z += item.rvz;
+      if (item.position.z > 20) {
+        resetItemPosition(item);
+      }
     }
   }
 }
 
 function resetItemPosition(item) {
   item.material.opacity = 0;
-  item.position.x = (Math.random() - 0.5) * 0.15;
-  item.position.y = (Math.random() - 0.5) * 0.15;
+  item.position.x = (Math.random() - 0.5) * 0.2;
+  item.position.y = (Math.random() - 0.5) * 0.2;
   item.position.z = -2 + Math.random() * 5;
   item.vz = Math.random() * 0.05 + 0.025;
   item.rvx = Math.random() * 0.02 - 0.01;
