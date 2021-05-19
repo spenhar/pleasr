@@ -1,7 +1,10 @@
 body {
   margin: 0;
   padding: 0;
-  background: #000000;
+  background: 
+    radial-gradient(#221144, #000);
+  width: 100vw;
+  height: 100vh;
 }
 #app,
 #app canvas {
@@ -10,6 +13,13 @@ body {
   top: 0;
   width: 100vw;
   height: 100vh;
+}
+
+.sparkle {
+  position: fixed;
+  left: 50vw;
+  top: 50vh;
+  z-index: -1;
 }
 
 video {
