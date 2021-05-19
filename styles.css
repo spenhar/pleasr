@@ -1,4 +1,5 @@
 body {
+  font-family: 'Poppins', serif;
   margin: 0;
   padding: 0;
   background: 
@@ -7,6 +8,48 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
+header {
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.6rem;
+}
+footer {
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.6rem;
+  position: fixed;
+  bottom: 0;
+  width: 100%!important;
+}
+
+.h1, .h2, .h3, .h4 {
+  color: white;
+}
+
+.h4 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 10px;
+}
+
+a {
+  text-decoration: none;
+}
+
+li {
+  text-decoration: none;
+  padding-right: 1rem;
+}
+
+ol, ul {
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 #app,
 #app canvas {
   position: absolute;
@@ -27,4 +70,16 @@ video {
   position: fixed;
   left: 99vw;
   opacity: 0;
+}
+
+.d-flex {
+  display: flex!important;
+}
+
+.list-style-none {
+  list-style: none!important;
+}
+
+.flex-wrap {
+  flex-wrap: wrap!important;
 }
