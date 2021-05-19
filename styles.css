@@ -17,9 +17,9 @@ header {
 }
 footer {
   z-index: 10;
-  display: flex;
-  align-items: center;
-  padding: 1rem 1.6rem;
+  /* display: flex; */
+  /* align-items: center; */
+  margin: 1rem .8rem;
   position: fixed;
   bottom: 0;
   width: 100%!important;
@@ -30,18 +30,21 @@ footer {
 }
 
 .h4 {
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 10px;
+  letter-spacing: 8px;
+
 }
 
-a {
+a, a:hover, a:focus, a:active {
   text-decoration: none;
+  color: inherit;
 }
 
 li {
   text-decoration: none;
-  padding-right: 1rem;
+  /* padding-right: 1rem; */
 }
 
 ol, ul {
@@ -82,4 +85,22 @@ video {
 
 .flex-wrap {
   flex-wrap: wrap!important;
+}
+
+.nav li {
+  float: left;
+  /* color: #f2f2f2; */
+  text-align: center;
+  /* padding-left: 1rem; */
+  /* text-decoration: none; */
+  /* font-size: 17px; */
+}
+
+.nav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.nav-right {
+  float: right;
 }
