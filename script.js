@@ -183,7 +183,7 @@ function resetItemPosition(item) {
   item.material.opacity = 0;
   item.position.x = (Math.random() - 0.5) * 0.15;
   item.position.y = (Math.random() - 0.5) * 0.15;
-  item.position.z = 2 + Math.random() * 5;
+  item.position.z = -2 + Math.random() * 5;
   item.vz = Math.random() * 0.05 + 0.025;
   item.rvx = Math.random() * 0.02 - 0.01;
   item.rvy = Math.random() * 0.02 - 0.01;
