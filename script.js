@@ -1,4 +1,6 @@
 const app = document.getElementById('app');
+const itemTitleEl = document.querySelector('.item__title');
+const itemByEl = document.querySelector('.item__by')
 const {innerWidth: width, innerHeight: height} = window;
 const cameraAspect = width / height;
 let frame = 0;
@@ -7,42 +9,66 @@ const itemProps = [
   {
     src: 'video7',
     aspect: 1,
+    title: 'Apes Together Strong',
+    by: 'pplpleasr',
   },
   {
     src: 'img/snowden.jpg',
     aspect: 1000 / 1294,
+    title: 'Stay Free (Edward Snowden)',
+    by: 'Snowden',
+    activeZ: 2.7,
+    scale: 2,
   },
   {
     src: 'video2',
     aspect: 1,
+    title: '数人が理解',
+    by: 'pplpleasr',
   },
   {
     src: 'video3',
     aspect: 600 / 450,
+    by: 'pplpleasr',
+    title: 'すごい!!!',
   },
   {
     src: 'img/01.jpg',
     aspect: 1,
+    title: 'Dank Elon',
+    by: 'MCE'
   },  
   {
     src: 'video4',
     aspect: 1,
+    title: 'All Aboard',
+    by: 'bluekirbyfi',
   },
   {
-    src: 'img/08.jpg',
-    aspect: 824 / 456
+    src: 'video8',
+    aspect: 824 / 456,
+    title: 'x*y=k',
+    by: 'pplpleasr',
   },  
   {
     src: 'video6',
     aspect: 500 / 606,
+    title: 'ETH Bruh',
+    by: 'pplpleasr',
   },
   {
     src: 'img/05.jpg',
     aspect: 1,
+    title: 'Safe Keeping',
+    by: 'bluekirbyfi'
   },    
   {
     src: 'video9',
     aspect: 654 / 820,
+    title: 'Dreaming at Dusk',
+    by: 'ixshells',
+    activeZ: 2.7,
+    scale: 2,
   }
 ]
 
@@ -70,26 +96,33 @@ const color = new THREE.Color();
 let intersections;
 let activeItem;
 
-document.addEventListener( 'mousemove', onMouseMove );
+document.addEventListener( 'mousemove', handleMouseMove );
 document.addEventListener('click', handleClick);
 
 function handleClick() {
-  if (intersections[0]) {
-    activeItem = intersections[0].object;
-    document.body.classList.add('isActive');
+  if (intersections[0] && intersections[0].object !== activeItem) {
+    console.log(intersections[0].object, activeItem)
+    activateItem();
   } else {
     activeItem = null;
     document.body.classList.remove('isActive');
   }
 }
 
-function onMouseMove( event ) {
+function handleMouseMove( event ) {
 
   event.preventDefault();
 
   mouse.x = ( event.clientX / width ) * 2 - 1;
   mouse.y = - ( event.clientY / height ) * 2 + 1;
 
+}
+
+function activateItem() {
+  activeItem = intersections[0].object;
+  document.body.classList.add('isActive');
+  itemTitleEl.innerHTML = itemProps[activeItem.index].title;
+  itemByEl.innerHTML = itemProps[activeItem.index].by;
 }
 
 /*
@@ -169,7 +202,8 @@ function createItem(i) {
   setTimeout(() => {
     const props = itemProps[i];
     const texture = props.src.substr(-3) === 'jpg' ? new THREE.TextureLoader().load( props.src ) : new THREE.VideoTexture( document.getElementById( props.src ) );
-    const geometry = new THREE.BoxBufferGeometry(.08 * props.aspect, .08, .0015);
+    const scale = props.scale ? props.scale : 1;
+    const geometry = new THREE.BoxBufferGeometry(.08 * props.aspect * scale, .08 * scale, .003);
     const material = new THREE.MeshPhongMaterial({ 
       color: 0xffffff, 
       wireframe: false,
@@ -178,6 +212,7 @@ function createItem(i) {
       map: texture
     });
     const item = new THREE.Mesh(geometry, material);
+    item.index = i;
     resetItemPosition(item);
     
     item.material.needsUpdate = true;
@@ -189,9 +224,13 @@ function updateField() {
   for (let pIndex = 0; pIndex < itemGroup.children.length; pIndex++) {
     const item = itemGroup.children[pIndex];
     if (item === activeItem) {
+      let activeZ = itemProps[item.index].activeZ ? itemProps[item.index].activeZ : 2.8;
+      if (width < 600) {
+        activeZ *= 0.95;
+      }
       item.position.x += 0.2 * (0 - item.position.x);
       item.position.y += 0.2 * (0 - item.position.y);
-      item.position.z += 0.2 * (2.8 - item.position.z);
+      item.position.z += 0.2 * (activeZ - item.position.z);
       item.material.opacity = 1;
       item.rotation.x += 0.2 * (-mouse.y * 0.4 - item.rotation.x);
       item.rotation.y += 0.2 * (mouse.x * 0.4 - item.rotation.y);
@@ -210,7 +249,7 @@ function updateField() {
 }
 
 function resetItemPosition(item) {
-  const positionRange = activeItem ? 0.9 : 0.6;
+  const positionRange = activeItem ? 1.2 : 0.6;
   item.material.opacity = 0;
   item.position.x = (Math.random() - 0.5) * positionRange;
   item.position.y = (Math.random() - 0.5) * positionRange;
