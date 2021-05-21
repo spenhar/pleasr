@@ -225,3 +225,8 @@ video {
   text-decoration: none;
   cursor: pointer;
 }
+
+#copyright {
+  font-size: 12px;
+  color: rgba(255,255,255,.4);
+}
