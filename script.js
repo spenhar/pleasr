@@ -196,6 +196,8 @@ function updateField() {
       item.rotation.x += 0.2 * (-mouse.y * 0.4 - item.rotation.x);
       item.rotation.y += 0.2 * (mouse.x * 0.4 - item.rotation.y);
       item.rotation.z += 0.2 * (0 - item.rotation.z);
+
+
     } else {
       item.position.z += item.vz;
       item.material.opacity = Math.min(1, item.material.opacity + 0.04);
