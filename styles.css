@@ -145,7 +145,7 @@ ol, ul {
 video {
   position: fixed;
   left: 99vw;
-  opacity: 0;
+  opacity: 0.1;
 }
 
 .list-style-none {
