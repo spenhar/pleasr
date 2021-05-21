@@ -195,9 +195,16 @@ function addLights() {
 const itemCount = itemProps.length;
 const itemGroup = new THREE.Group();
 scene.add(itemGroup);
+const starCount = 4000;
+const starGroup = new THREE.Group();
+scene.add(starGroup);
 
 for (let i=0; i < itemCount; i++) {
   createItem(i);
+}
+
+for (let i=0; i < starCount; i++) {
+  createStar(i);
 }
 
 function createItem(i) {
@@ -217,14 +224,25 @@ function createItem(i) {
     item.index = i;
     resetItemPosition(item);
     
-    item.material.needsUpdate = true;
     itemGroup.add(item);
   }, i * 500);
 }
 
+function createStar(i) {
+  const geometry = new THREE.OctahedronBufferGeometry(.001);
+  const material = new THREE.MeshLambertMaterial({ 
+    color: 0xffffff, 
+    wireframe: false,
+  });
+  const item = new THREE.Mesh(geometry, material);
+  item.index = i;
+  resetStarPosition(item);
+  starGroup.add(item);
+}
+
 function updateField() {
-  for (let pIndex = 0; pIndex < itemGroup.children.length; pIndex++) {
-    const item = itemGroup.children[pIndex];
+  for (let i = 0; i < itemGroup.children.length; i++) {
+    const item = itemGroup.children[i];
     const targetOpacity = activeItem ? 0.2 : 1;
     if (item === activeItem) {
       let activeZ = itemProps[item.index].activeZ ? itemProps[item.index].activeZ : 2.8;
@@ -258,6 +276,14 @@ function updateField() {
       }
     }
   }
+
+  for (let s = 0; s < starGroup.children.length; s++) {
+    const item = starGroup.children[s];
+    item.position.z += item.vz;
+    if (item.position.z > 3) {
+      resetStarPosition(item);
+    }
+  }
 }
 
 function resetItemPosition(item) {
@@ -273,6 +299,14 @@ function resetItemPosition(item) {
   item.rvx = Math.random() * 0.02 - 0.01;
   item.rvy = Math.random() * 0.02 - 0.01;
   item.rvz = Math.random() * 0.02 - 0.01;
+}
+
+function resetStarPosition(item) {
+  const positionRange = 3;
+  item.position.x = (Math.random() - 0.5) * positionRange;
+  item.position.y = (Math.random() - 0.5) * positionRange;
+  item.position.z = 1 + Math.random() * 0.5;
+  item.vz = Math.random() * 0.01 + 0.005;
 }
 
 const render = (now) => {
