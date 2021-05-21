@@ -227,17 +227,6 @@ function updateField() {
     const item = itemGroup.children[pIndex];
     const targetOpacity = activeItem ? 0.2 : 1;
     if (item === activeItem) {
-<<<<<<< HEAD
-      item.position.x += 0.2 * (0 - item.position.x);
-      item.position.y += 0.2 * (0 - item.position.y);
-      item.position.z += 0.2 * (2.8 - item.position.z);
-      item.material.opacity = 1;
-      item.rotation.x += 0.2 * (-mouse.y * 0.4 - item.rotation.x);
-      item.rotation.y += 0.2 * (mouse.x * 0.4 - item.rotation.y);
-      item.rotation.z += 0.2 * (0 - item.rotation.z);
-
-
-=======
       let activeZ = itemProps[item.index].activeZ ? itemProps[item.index].activeZ : 2.8;
       if (width < 600) {
         activeZ *= 0.95;
@@ -258,7 +247,6 @@ function updateField() {
       if (item.position.z > 3) {
         resetItemPosition(item);
       }
->>>>>>> be6b3ef622d8444b1c922d8b2f680f68c5adcd58
     } else {
       item.position.z += item.vz;
       item.material.opacity += 0.06 * (targetOpacity - item.material.opacity);
