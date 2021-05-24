@@ -5,6 +5,33 @@ const {innerWidth: width, innerHeight: height} = window;
 const cameraAspect = width / height;
 let frame = 0;
 let initialized = false;
+let scrollBoost = 0;
+const emojiProps = [
+  {
+    src: 'img/emoji/chilis@2x.png',
+  },     
+  {
+    src: 'img/emoji/frog@2x.png',
+  },       
+  {
+    src: 'img/emoji/rocket@2x.png',
+  },     
+  {
+    src: 'img/emoji/unicorn@2x.png',
+  },
+  {
+    src: 'img/emoji/cone@2x.png',
+  },       
+  {
+    src: 'img/emoji/headphones@2x.png',
+  }, 
+  {
+    src: 'img/emoji/silverback@2x.png',
+  }, 
+  {
+    src: 'img/emoji/sushi@2x.png',
+  },
+]
 const itemProps = [
   {
     src: 'video7',
@@ -77,6 +104,10 @@ window.addEventListener('load', () => {
     initialized = true;
   }
 });
+
+window.addEventListener('wheel', (e) => {
+  scrollBoost = e.deltaY * 0.001;
+})
 /*
   Renderer
   */
@@ -118,6 +149,18 @@ function handleMouseMove( event ) {
   mouse.x = ( event.clientX / width ) * 2 - 1;
   mouse.y = - ( event.clientY / height ) * 2 + 1;
 
+  raycaster.setFromCamera( mouse, camera );
+  intersections = raycaster.intersectObjects( itemGroup.children )
+
+  if ( intersections.length > 0 ) {
+    hoveredItem = intersections[0].object;
+    if (hoveredItem !== activeItem) {
+      document.body.style.cursor = 'pointer';
+    }
+  } else {
+    hoveredItem = null;
+    document.body.style.cursor = 'auto';
+  }
 }
 
 function activateItem() {
@@ -158,35 +201,37 @@ const scene = new THREE.Scene();
 /*
   Lights
   */
-const ambientLight = new THREE.AmbientLight(0xffffff, .25);
-const centerLight = new THREE.PointLight(0x222222, .25, 20);
-const rearLight = new THREE.PointLight(0x662222, .35, 280);
-const rightLight = new THREE.PointLight(0x444444, .25, 80);
-const redSpotLight = new THREE.PointLight( 0xffffff, 1, 5);
-const blueSpotLight = new THREE.PointLight( 0x666666, 2.5, 80);
+const ambientLight = new THREE.AmbientLight(0xffffff, .35);
+const centerLight = new THREE.PointLight(0xcccccc, 0.4, 20);
+const topLeftSpotLight = new THREE.PointLight( 0xaa9977, 0.75, 80);
+const bottomLeftLight = new THREE.PointLight(0x553333, 0.75, 280);
+const topRightLight = new THREE.PointLight(0x887788, 0.75, 80);
+const bottomRightLight = new THREE.PointLight( 0x9944cc, 0.75, 5);
 
 addLights();
 
 function addLights() {
   scene.add(ambientLight);
-  centerLight.position.x = 10;
-  centerLight.position.z = 12;
+  centerLight.position.x = 0;
+  centerLight.position.y = 0;
+  centerLight.position.z = 4;
   scene.add(centerLight);
 
-  rearLight.position.z = 15;
-  rearLight.position.y = -10;
-  scene.add(rearLight);
+  bottomLeftLight.position.x = -4;
+  bottomLeftLight.position.z = 4;
+  bottomLeftLight.position.y = -4;
+  scene.add(bottomLeftLight);
 
-  rightLight.position.x = 10;
-  rightLight.position.y = 10;
-  rightLight.position.z = 12;
-  scene.add(rightLight);
+  topRightLight.position.x = 5;
+  topRightLight.position.y = 5;
+  topRightLight.position.z = 5;
+  scene.add(topRightLight);
 
-  // redSpotLight.position.set( 0, 0, -12 );
-  scene.add(redSpotLight);
+  bottomRightLight.position.set( 5, -5, 5 );
+  scene.add(bottomRightLight);
 
-  blueSpotLight.position.set( 10, 12, 30 );
-  scene.add(blueSpotLight);
+  topLeftSpotLight.position.set( -5, 5, 5 );
+  scene.add(topLeftSpotLight);
 }
 
 /*
@@ -196,8 +241,24 @@ const itemCount = itemProps.length;
 const itemGroup = new THREE.Group();
 scene.add(itemGroup);
 
+const starCount = 2000;
+const starGroup = new THREE.Group();
+scene.add(starGroup);
+
+const emojiCount = emojiProps.length;
+const emojiGroup = new THREE.Group();
+scene.add(emojiGroup);
+
 for (let i=0; i < itemCount; i++) {
   createItem(i);
+}
+
+for (let i=0; i < starCount; i++) {
+  createStar(i);
+}
+
+for (let i=0; i < emojiCount; i++) {
+  createEmoji(i);
 }
 
 function createItem(i) {
@@ -217,14 +278,45 @@ function createItem(i) {
     item.index = i;
     resetItemPosition(item);
     
-    item.material.needsUpdate = true;
     itemGroup.add(item);
   }, i * 500);
 }
 
+function createStar(i) {
+  const geometry = new THREE.OctahedronBufferGeometry(.0008);
+  const material = new THREE.MeshLambertMaterial({ 
+    color: 0xffffcc, 
+    wireframe: false,
+  });
+  const item = new THREE.Mesh(geometry, material);
+  item.index = i;
+  resetStarPosition(item);
+  starGroup.add(item);
+}
+
+function createEmoji(i) {
+  setTimeout(() => {
+    const props = emojiProps[i];
+    const texture = new THREE.TextureLoader().load( props.src );
+    const geometry = new THREE.PlaneBufferGeometry(0.03, 0.03, 2);
+    const material = new THREE.MeshBasicMaterial({ 
+      color: 0xffffff, 
+      wireframe: false,
+      transparent: true,
+      map: texture
+    });
+    const item = new THREE.Mesh(geometry, material);
+    item.index = i;
+    resetEmojiPosition(item);
+    
+    emojiGroup.add(item);
+  }, i * 500);
+}
+
+
 function updateField() {
-  for (let pIndex = 0; pIndex < itemGroup.children.length; pIndex++) {
-    const item = itemGroup.children[pIndex];
+  for (let i = 0; i < itemGroup.children.length; i++) {
+    const item = itemGroup.children[i];
     const targetOpacity = activeItem ? 0.2 : 1;
     if (item === activeItem) {
       let activeZ = itemProps[item.index].activeZ ? itemProps[item.index].activeZ : 2.8;
@@ -248,7 +340,7 @@ function updateField() {
         resetItemPosition(item);
       }
     } else {
-      item.position.z += item.vz;
+      item.position.z += item.vz + scrollBoost;
       item.material.opacity += 0.06 * (targetOpacity - item.material.opacity);
       item.rotation.x += item.rvx;
       item.rotation.y += item.rvy;
@@ -256,6 +348,24 @@ function updateField() {
       if (item.position.z > 3) {
         resetItemPosition(item);
       }
+    }
+  }
+
+  for (let s = 0; s < starGroup.children.length; s++) {
+    const item = starGroup.children[s];
+    item.position.z += item.vz + scrollBoost;
+    if (item.position.z > 3) {
+      resetStarPosition(item);
+    }
+  }
+
+  for (let e = 0; e < emojiGroup.children.length; e++) {
+    const item = emojiGroup.children[e];
+    item.position.z += item.vz + scrollBoost;
+    item.rotation.z += item.rvz;  
+    item.material.opacity += 0.3 * (1 - item.material.opacity);  
+    if (item.position.z > 3) {
+      resetEmojiPosition(item);
     }
   }
 }
@@ -275,6 +385,25 @@ function resetItemPosition(item) {
   item.rvz = Math.random() * 0.02 - 0.01;
 }
 
+function resetStarPosition(item) {
+  const positionRange = 2;
+  item.position.x = (Math.random() - 0.5) * positionRange;
+  item.position.y = (Math.random() - 0.5) * positionRange;
+  item.position.z = 1 + Math.random() * 0.5;
+  item.vz = Math.random() * 0.01 + 0.005;
+}
+
+function resetEmojiPosition(item) {
+  const positionRange = 1;
+  item.material.opacity = 0;
+  item.position.x = (Math.random() - 0.5) * positionRange;
+  item.position.y = (Math.random() - 0.5) * positionRange;
+  item.position.z = -1 + Math.random() * 2;
+  item.rotation.z = Math.random();  
+  item.vz = Math.random() * 0.01 + 0.005;
+  item.rvz = Math.random() * 0.02 - 0.01;  
+}
+
 const render = (now) => {
 
   requestAnimationFrame(render);
@@ -282,20 +411,11 @@ const render = (now) => {
   if (!initialized) return;
   updateField()
 
-  raycaster.setFromCamera( mouse, camera );
-  intersections = raycaster.intersectObjects( itemGroup.children )
-
-  if ( intersections.length > 0 ) {
-    hoveredItem = intersections[0].object;
-    if (hoveredItem !== activeItem) {
-      document.body.style.cursor = 'pointer';
-    }
-  } else {
-    hoveredItem = null;
-    document.body.style.cursor = 'auto';
-  }
   renderer.render(scene, camera);
-
+  scrollBoost *= 0.8;
+  if (scrollBoost < 0.00015) {
+    scrollBoost = 0;
+  }
   frame++;
 }
 
