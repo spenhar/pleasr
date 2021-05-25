@@ -239,5 +239,9 @@ a .twitter-bird-container {
 .twitter-bird {
   height: 24px;
   width: 24px;
-  color: rgba(255,255,255,.5);
+  fill: rgba(255,255,255,.5);
+}
+
+.about-section {
+  padding: .5rem 0;
 }
